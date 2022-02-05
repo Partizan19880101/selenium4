@@ -1,0 +1,62 @@
+java -jar selenium-server-4.0.0-beta-4.jar standalone
+java -jar selenium-server-4.0.0-beta-4.jar info config
+java -jar selenium-server-4.0.0-beta-4.jar
+
+java -jar selenium-server-4.0.0-beta-4.jar hub --help
+java -jar selenium-server-4.0.0-beta-4.jar hub
+java -jar selenium-server-4.0.0-beta-4.jar node
+java -jar selenium-server-4.0.0-beta-4.jar node --detect-drivers true --publish-events tcp://172.19.208.1:4442 --subscribe-events tcp://172.19.208.1:4443
+
+#Event Bus: serves as a communication path to the other Grid components in the next steps.
+java -jar selenium-server-4.0.0-beta-4.jar event-bus
+
+#Session Map: Session Map is one of the Selenium Grid Processes. Whenever a node/session is created, Node URI/Session ID gets stored in Sessions Map.  Responsible for mapping session IDs to the node the session is running on.
+java -jar selenium-server-4.0.0-beta-4.jar sessions
+
+#Session Queue: Adds the new session request to a local queue. The distributor picks up the request from the queue.
+java -jar selenium-server-4.0.0-beta-4.jar sessionqueue
+
+#Distributor: All Selenium Grid nodes gets attached under Distributor process. If Selenium client code sends a create session request, then Distributor is responsible for assigning a node.
+java -jar selenium-server-4.0.0-beta-4.jar distributor --sessions http://localhost:5556 --sessionqueue http://localhost:5559 --bind-bus false
+
+#Router: All the client requests will be received by Router. If the request is for creating a new session, then it will be redirected to Distributor process. All other requests will be sent to the node associated to the request after querying the node URI from Sessions Map using Session ID. When we start a Router, it will expose an address to the web.
+java -jar selenium-server-4.0.0-beta-4.jar router --sessions http://localhost:5556 --sessionqueue http://localhost:5559 --distributor http://localhost:5553
+
+#Node: Once the node is created under the distributor, the node details along with Node URI is updated in Session Map. Drivers will get auto detected if the exe/binary files are available in the folder where you have saved the Selenium Server jar file.
+java -jar selenium-server-4.0.0-beta-4.jar node --detect-drivers true
+
+DOCKER
+docker run -d -p 4444:4444 --shm-size="2g" selenium/standalone-chrome:4.0.0-rc-1-prerelease-20210713
+docker run -d -p 4444:4444 --shm-size="2g" selenium/standalone-edge:4.0.0-rc-1-prerelease-20210713
+
+docker ps
+docker ps -a
+docker stop containerId
+docker system prune
+docker system prune -a
+
+Create & Spinnup containers via docker-compose file: docker-compose up
+Detached Mode: docker-compose up -d
+
+Stop all running containers via docker-compose file: docker-compose down
+
+Create & Spinnup containers via docker-compose file: docker-compose up
+Detached Mode: docker-compose up -d
+
+Stop all running containers via docker-compose file: docker-compose down
+
+Example Scale Commands:
+docker-compose up --scale chrome=2 -d
+docker-compose up --scale firefox=3 -d
+
+Remove all Docker unused (Non running) containers etc:
+docker system prune -a
+
+Create & Spin up containers via docker-compose file: docker-compose -f docker-compose-video.yml up
+Detached Mode: docker-compose -f docker-compose-video.yml up -d
+
+Stop Containers:
+docker-compose -f docker-compose-video.yml down
+
+Remove all Docker unused (Non running) containers etc:
+docker system prune -a
